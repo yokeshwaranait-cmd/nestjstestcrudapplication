@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   BadRequestException,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -124,4 +125,27 @@ async createMultiple(
       throw new BadRequestException(error.message);
     }
   }
+
+  @Get('filter/all')
+async filterProducts(
+  @Query('name') name?: string,
+  @Query('startDate') startDate?: string,
+  @Query('endDate') endDate?: string,
+  @Query('stock') stock?: string,  // accept stock number
+) {
+  try {
+    return await this.productsService.filterProducts({
+      name,
+      startDate,
+      endDate,
+      stock,
+    });
+  } catch (error) {
+    throw new BadRequestException(error.message);
+  }
 }
+
+
+}
+
+

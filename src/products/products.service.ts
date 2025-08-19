@@ -7,7 +7,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>) {}
+  constructor(@InjectModel(Product.name, 'productsConnection') private productModel: Model<ProductDocument>) {}
 
   async create(dto: CreateProductDto, imagePaths: string[]): Promise<Product> {
     try {
@@ -54,4 +54,42 @@ export class ProductsService {
     if (!result) throw new NotFoundException('Product not found');
     return { message: 'Product deleted successfully' };
   }
+
+ async filterProducts(filters: {
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  stock?: string;  // will accept numbers
+}): Promise<Product[]> {
+  const query: any = {};
+
+  //  Filter by name (case-insensitive)
+  if (filters.name) {
+  const cleanedName = filters.name.replace(/[^a-zA-Z0-9 ]/g, ''); // remove unwanted chars
+  query.name = { $regex: cleanedName, $options: 'i' };
+}
+
+  //  Filter by created date
+  if (filters.startDate || filters.endDate) {
+    query.createdAt = {};
+    if (filters.startDate) {
+      query.createdAt.$gte = new Date(filters.startDate);
+    }
+    if (filters.endDate) {
+      query.createdAt.$lte = new Date(filters.endDate);
+    }
+  }
+
+  //  Filter by stock count
+  if (filters.stock) {
+    const stockNum = Number(filters.stock);
+    if (!isNaN(stockNum)) {
+      query.stock = stockNum; // exact stock count
+    }
+  }
+
+  return this.productModel.find(query).exec();
+}
+
+
 }

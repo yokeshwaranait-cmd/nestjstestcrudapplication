@@ -7,7 +7,7 @@ import { RolesController } from './roles.controller';
 
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }])],
+  imports: [MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }],  'usersConnection',)],
   providers: [RolesService],
   controllers: [RolesController],  
   exports: [MongooseModule], //  so other modules (or seed) can use it

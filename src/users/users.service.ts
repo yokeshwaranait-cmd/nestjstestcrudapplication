@@ -13,7 +13,7 @@ import { MESSAGES } from '../common/constants/messages';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name, 'usersConnection') private userModel: Model<User>) {}
 
   async create(dto: CreateUserDto): Promise<User> {
     try {

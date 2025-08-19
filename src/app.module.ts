@@ -6,17 +6,18 @@ import { RolesModule } from './roles/roles.module';
 import { ProductsModule } from './products/products.module';
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/userdb'
-    ),
+    MongooseModule.forRoot('mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/userdb', {
+      connectionName: 'usersConnection',
+    }),
 
-    MongooseModule.forRoot(
-      'mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/productdb',
-    ),
+    MongooseModule.forRoot('mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/productdb', {
+      connectionName: 'productsConnection',
+    }),
+
     UsersModule,
     ProductsModule,
     AuthModule,
-    RolesModule
+    RolesModule,
   ],
 })
 export class AppModule {}

@@ -9,6 +9,11 @@ export class CreateProductDto {
   @IsString()
   description?: string;
 
+  
+  @IsOptional()
+  @IsString()
+  stock?: string;
+
   @IsNotEmpty()
   @IsString()
   price: string;

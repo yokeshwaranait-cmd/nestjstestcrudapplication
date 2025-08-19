@@ -14,8 +14,19 @@ export class Product {
   @Prop({ required: true })
   price: number;
 
-  @Prop([String])
-  images: string[]; // store image paths
+  
+  @Prop({ required: true })
+  stock: number;
+
+  @Prop({ type: [String], default: [] })
+  images: string[];
+
+
+  @Prop()
+  startDate: Date;
+
+  @Prop()
+  endDate: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
