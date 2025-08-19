@@ -12,14 +12,27 @@ export class AuthService {
     return this.users.create(dto);
   }
 
-  async login(email: string, password: string) {
-    const user = await this.users.findByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
-
-    const payload = { sub: user._id, email: user.email, roles: user.roles };
-    return { access_token: this.jwt.sign(payload) };
+async login(email: string, password: string) {
+  const user = await this.users.findByEmail(email);
+  if (!user) {
+    throw new UnauthorizedException('Invalid credentials (no user)');
   }
+
+ 
+
+  // Check if password or user.password is missing
+  if (!password || !user.password) {
+    throw new UnauthorizedException('Password is missing');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new UnauthorizedException('Invalid credentials (wrong password)');
+  }
+
+  const payload = { sub: user._id, email: user.email, roles: user.roles };
+  return { access_token: this.jwt.sign(payload) };
+}
+
+
 }
