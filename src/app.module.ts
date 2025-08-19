@@ -3,12 +3,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule }  from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
+import { ProductsModule } from './products/products.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
       'mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/userdb'
     ),
+
+    MongooseModule.forRoot(
+      'mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/productdb',
+    ),
     UsersModule,
+    ProductsModule,
     AuthModule,
     RolesModule
   ],

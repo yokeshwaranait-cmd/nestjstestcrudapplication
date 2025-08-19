@@ -1,38 +1,36 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { MESSAGES } from '../common/constants/messages';
 
 @Injectable()
 export class AuthService {
   constructor(private users: UsersService, private jwt: JwtService) {}
 
   async register(dto: CreateUserDto) {
-    return this.users.create(dto);
+    try {
+      return await this.users.create(dto);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    }
   }
 
-async login(email: string, password: string) {
-  const user = await this.users.findByEmail(email);
-  if (!user) {
-    throw new UnauthorizedException('Invalid credentials (no user)');
+  async login(email: string, password: string) {
+    try {
+      const user = await this.users.findByEmail(email);
+      if (!user) throw new UnauthorizedException(MESSAGES.AUTH.INVALID_CREDENTIALS);
+
+      if (!user.password) throw new UnauthorizedException(MESSAGES.AUTH.PASSWORD_MISSING);
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) throw new UnauthorizedException(MESSAGES.AUTH.INVALID_CREDENTIALS);
+
+      const payload = { sub: user._id, email: user.email, roles: user.roles };
+      return { access_token: this.jwt.sign(payload), message: MESSAGES.AUTH.LOGIN_SUCCESS };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    }
   }
-
- 
-
-  // Check if password or user.password is missing
-  if (!password || !user.password) {
-    throw new UnauthorizedException('Password is missing');
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new UnauthorizedException('Invalid credentials (wrong password)');
-  }
-
-  const payload = { sub: user._id, email: user.email, roles: user.roles };
-  return { access_token: this.jwt.sign(payload) };
-}
-
-
 }
