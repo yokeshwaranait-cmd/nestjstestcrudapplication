@@ -10,7 +10,7 @@ export enum Role {
 
 @Schema({ timestamps: true })
 export class User {
-  _id: Types.ObjectId;   // 👈 Add this
+  _id: Types.ObjectId;  
 
   @Prop({ required: true })
   name: string;
