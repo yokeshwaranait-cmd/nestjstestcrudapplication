@@ -12,6 +12,9 @@ export class MailerService {
   constructor(@InjectQueue('mail') private mailQueue: Queue) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587, // Gmail TLS
+      secure: false,
       auth: {
         user: 'yokeshwaranait@gmail.com',
         pass: 'giex tyvr mnis baxd',
@@ -36,11 +39,11 @@ export class MailerService {
     to: string,
     subject: string,
     template: string,
-    context: any,
-    attachments: any[] = [],
+    context: string,
+    attachments: string[] = [],
   ) {
     return await this.transporter.sendMail({
-      from: 'yokeshwaran@gmail.com',
+      from: 'yokeshwaranait@gmail.com',
       to,
       subject,
       template,
@@ -50,7 +53,7 @@ export class MailerService {
   }
 
 
-   async sendWelcomeEmail(data: any) {
+   async sendWelcomeEmail(data) {
     return await this.mailQueue.add('welcome', data, {
       attempts: 3,
       backoff: 5000,

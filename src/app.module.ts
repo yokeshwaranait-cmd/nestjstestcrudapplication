@@ -13,6 +13,7 @@ import { MailerService } from './mailer/mailer.service';
 import { BullModule, BullQueueGlobalEvents } from '@nestjs/bull';
 import { ReportModule } from './reports/reports.module';
 import { ReportService } from './reports/reports.service';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ReportService } from './reports/reports.service';
     ProductsModule,
     AuthModule,
     RolesModule,
+    NotificationModule,
      
   ],
    providers: [TasksService]

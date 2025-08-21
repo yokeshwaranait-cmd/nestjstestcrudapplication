@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ReportProcessor } from './reports.processor';
 import { ReportController } from './reports.controller';
+import { ReportService } from './reports.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { ReportController } from './reports.controller';
     }),
   ],
   controllers: [ReportController],
-  providers: [ReportProcessor],
+  providers: [ReportProcessor, ReportService],
 })
 export class ReportModule {}
