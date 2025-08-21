@@ -7,6 +7,14 @@ import { ProductsModule } from './products/products.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { MailerModule } from './mailer/mailer.module';
+import { TasksService } from './tasks.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MailerService } from './mailer/mailer.service';
+import { BullModule, BullQueueGlobalEvents } from '@nestjs/bull';
+import { ReportModule } from './reports/reports.module';
+import { ReportService } from './reports/reports.service';
+import { NotificationModule } from './notification/notification.module';
+
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb+srv://Yokeshwaran:yogi@cluster0.t9rwvww.mongodb.net/userdb', {
@@ -17,12 +25,25 @@ import { MailerModule } from './mailer/mailer.module';
       connectionName: 'productsConnection',
     }),
 
+    ScheduleModule.forRoot(),
+
+     BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    MailerModule,
+    ReportModule,
+
     UsersModule,
     ProductsModule,
     AuthModule,
     RolesModule,
-    MailerModule
+    NotificationModule,
+     
   ],
+   providers: [TasksService]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

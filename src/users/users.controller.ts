@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/commo
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
-@Controller('users')   // 👈 this defines the /users route
+@Controller('users')   //  this defines the /users route
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

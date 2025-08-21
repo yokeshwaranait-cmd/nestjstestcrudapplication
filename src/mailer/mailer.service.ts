@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bull';
+import type { Queue } from 'bull';   //  fix
 import * as nodemailer from 'nodemailer';
 import hbs from 'nodemailer-express-handlebars';
 import { join } from 'path';
@@ -7,12 +9,15 @@ import { join } from 'path';
 export class MailerService {
   private transporter;
 
-  constructor() {
+  constructor(@InjectQueue('mail') private mailQueue: Queue) {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587, // Gmail TLS
+      secure: false,
       auth: {
-        user: 'yokeshwaranait@gmail.com',        // Gmail
-        pass: 'giex tyvr mnis baxd',             // App password (no spaces!)
+        user: 'yokeshwaranait@gmail.com',
+        pass: 'giex tyvr mnis baxd',
       },
     });
 
@@ -34,16 +39,28 @@ export class MailerService {
     to: string,
     subject: string,
     template: string,
-    context: any,
-    attachments: any[] = [],
+    context: string,
+    attachments: string[] = [],
   ) {
     return await this.transporter.sendMail({
-      from: 'yokeshwaran@gmail.com',
-      to: "mkyvyokeshwaran@gmail.com",
+      from: 'yokeshwaranait@gmail.com',
+      to,
       subject,
       template,
       context,
       attachments,
     });
   }
+
+
+   async sendWelcomeEmail(data) {
+    return await this.mailQueue.add('welcome', data, {
+      attempts: 3,
+      backoff: 5000,
+      removeOnComplete: true,
+    });
+  }
+  
+
+
 }
