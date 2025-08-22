@@ -10,10 +10,7 @@ async function bootstrap() {
 
   const roleModel = app.get<Model<Role>>(getModelToken(Role.name));
 
-  await roleModel.create([
-    { name: 'admin' },
-    { name: 'user' },
-  ]);
+  await roleModel.create([{ name: 'admin' }, { name: 'user' }]);
 
   console.log('Roles seeded successfully!');
   await app.close();

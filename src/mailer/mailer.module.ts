@@ -12,7 +12,7 @@ import { MailProcessor } from './mail.processor';
     }),
   ],
   controllers: [MailerController],
-  providers: [MailerService,  MailProcessor],
-  exports: [MailerService]
+  providers: [MailerService, MailProcessor],
+  exports: [MailerService],
 })
 export class MailerModule {}

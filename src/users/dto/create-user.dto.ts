@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsEnum, IsArray } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  IsOptional,
+  IsEnum,
+  IsArray,
+} from 'class-validator';
 import { Role } from '../schemas/user.schema';
 
 export class CreateUserDto {

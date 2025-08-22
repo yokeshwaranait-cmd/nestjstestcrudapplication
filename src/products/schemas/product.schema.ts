@@ -14,13 +14,11 @@ export class Product {
   @Prop({ required: true })
   price: number;
 
-  
   @Prop({ required: true })
   stock: number;
 
   @Prop({ type: [String], default: [] })
   images: string[];
-
 
   @Prop()
   startDate: Date;

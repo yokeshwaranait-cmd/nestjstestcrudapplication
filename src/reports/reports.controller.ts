@@ -5,13 +5,14 @@ import { ExcelReport, PDFReport, ReportService } from './reports.service';
 
 @Controller('report')
 export class ReportController {
-  constructor(@InjectQueue('report') private reportQueue: Queue, private readonly reportService: ReportService) {}
+  constructor(
+    @InjectQueue('report') private reportQueue: Queue,
+    private readonly reportService: ReportService,
+  ) {}
 
   @Post('monthly')
   async generateMonthlyReport(@Body() body: { month: string; year: string }) {
-    const job = await this.reportQueue.add('monthly', body, {
-
-    });
+    const job = await this.reportQueue.add('monthly', body, {});
     return { status: 'queued', jobId: job.id };
   }
 
@@ -27,5 +28,3 @@ export class ReportController {
     return this.reportService.generateReport(body, generator);
   }
 }
-
-

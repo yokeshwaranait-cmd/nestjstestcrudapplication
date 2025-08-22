@@ -13,7 +13,9 @@ import { MESSAGES } from '../common/constants/messages';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name, 'usersConnection') private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name, 'usersConnection') private userModel: Model<User>,
+  ) {}
 
   async create(dto: CreateUserDto): Promise<User> {
     try {
@@ -28,24 +30,30 @@ export class UsersService {
       });
 
       return await user.save();
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 
   async findByEmail(email: string): Promise<User | null> {
     try {
       return await this.userModel.findOne({ email }).select('+password');
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 
   async findAll(): Promise<User[]> {
     try {
       return await this.userModel.find().exec();
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 
@@ -54,8 +62,10 @@ export class UsersService {
       const user = await this.userModel.findById(id).exec();
       if (!user) throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
       return user;
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 
@@ -64,8 +74,10 @@ export class UsersService {
       const user = await this.userModel.findById(id).select('-password');
       if (!user) throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
       return user;
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 
@@ -79,8 +91,10 @@ export class UsersService {
         .select('-password');
       if (!updated) throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
       return updated;
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 
@@ -89,8 +103,10 @@ export class UsersService {
       const result = await this.userModel.findByIdAndDelete(id);
       if (!result) throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
       return { message: MESSAGES.USER.DELETED };
-    } catch (error) {
-      throw new InternalServerErrorException(error.message || MESSAGES.GENERAL.INTERNAL_ERROR);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : MESSAGES.GENERAL.INTERNAL_ERROR;
+      throw new InternalServerErrorException(message);
     }
   }
 }

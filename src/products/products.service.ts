@@ -29,8 +29,9 @@ export class ProductsService {
         images: imagePaths && imagePaths.length > 0 ? imagePaths : undefined,
       });
       return await product.save();
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
+    } catch (error: unknown) {
+      const message = (error as Error).message ?? 'Internal server error';
+      throw new InternalServerErrorException(message);
     }
   }
 
@@ -49,32 +50,34 @@ export class ProductsService {
   }
 
   async update(
-  id: string,
-  dto: CreateProductDto,
-  imagePaths?: string[],
-): Promise<Product> {
+    id: string,
+    dto: CreateProductDto,
+    imagePaths?: string[],
+  ): Promise<Product> {
+    const { images, ...rest } = dto;
 
-  const { images, ...rest } = dto;
+    const processedImages = images?.length ? images : (imagePaths ?? []);
 
-  const updateData: Partial<Omit<CreateProductDto, 'images'> & { images?: string[] }> = {
-    ...rest, // safe because no multer files
-  };
+    const updateData: Partial<
+      Omit<CreateProductDto, 'images'> & { images?: string[] }
+    > = {
+      ...rest,
+      image: processedImages,
+    };
 
-  // Only add string[] paths
-  if (imagePaths && imagePaths.length > 0) {
-    updateData.images = imagePaths;
+    // Only add string[] paths
+    if (imagePaths && imagePaths.length > 0) {
+      updateData.images = imagePaths;
+    }
+
+    const product = await this.productModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .exec();
+
+    if (!product) throw new NotFoundException('Product not found');
+
+    return product;
   }
-
-  const product = await this.productModel
-    .findByIdAndUpdate(id, updateData, { new: true })
-    .exec();
-
-  if (!product) throw new NotFoundException('Product not found');
-
-  return product;
-}
-
-
 
   async delete(id: string): Promise<{ message: string }> {
     const result = await this.productModel.findByIdAndDelete(id);
