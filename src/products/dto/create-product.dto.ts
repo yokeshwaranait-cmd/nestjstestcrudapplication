@@ -1,26 +1,25 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
-  
   @IsOptional()
   @IsString()
   stock?: string;
 
   @IsNotEmpty()
   @IsString()
-  price: string;
+  price!: string;
 
-   // for single file upload
-  image?: Express.Multer.File;
+  // for single file upload
+  image?: (string | File)[];
 
   // for multiple files upload
-  images?: Express.Multer.File[];
+  images?: (string | File)[];
 }

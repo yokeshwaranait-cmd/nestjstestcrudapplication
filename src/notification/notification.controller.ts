@@ -1,5 +1,10 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { NotificationService, EmailNotifier, SmsNotifier, PushNotifier } from './notification.service';
+import {
+  NotificationService,
+  EmailNotifier,
+  SmsNotifier,
+  PushNotifier,
+} from './notification.service';
 
 @Controller('notification')
 export class NotificationController {

@@ -28,11 +28,18 @@ const storage = diskStorage({
   },
 });
 
-const imageFileFilter = (req, file, callback) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-    return callback(new Error('Only image files are allowed!'), false);
+const imageFileFilter = (
+  _req: unknown,
+  file: Express.Multer.File,
+  callback: unknown,
+) => {
+  if (!/\.(jpg|jpeg|png|gif)$/i.test(file.originalname)) {
+    return (callback as (err: Error, accept: boolean) => void)(
+      new Error('Only image files are allowed!'),
+      false,
+    );
   }
-  callback(null, true);
+  (callback as (err: Error | null, accept: boolean) => void)(null, true);
 };
 
 @Controller('products')
@@ -40,44 +47,50 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   //  Create product with SINGLE image
- @Post('single')
-@UseInterceptors(FileInterceptor('image', { storage, fileFilter: imageFileFilter }))
-async createSingle(
-  @Body() dto: CreateProductDto,
-  @UploadedFile() file: Express.Multer.File, 
-) {
-  const imagePaths = file ? [`/uploads/products/${file.filename}`] : [];
-  return this.productsService.create(dto, imagePaths);
-}
+  @Post('single')
+  @UseInterceptors(
+    FileInterceptor('image', { storage, fileFilter: imageFileFilter }),
+  )
+  async createSingle(
+    @Body() dto: CreateProductDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const imagePaths = file ? [`/uploads/products/${file.filename}`] : [];
+    return this.productsService.create(dto, imagePaths);
+  }
 
-@Post('multiple')
-@UseInterceptors(FilesInterceptor('images', 5, { storage }))
-async createMultiple(
-  @Body() dto: CreateProductDto,
-  @UploadedFiles() files: Express.Multer.File[], 
-) {
-  const imagePaths = files.map((file) => `/uploads/products/${file.filename}`);
-  return this.productsService.create(dto, imagePaths);
-}
+  @Post('multiple')
+  @UseInterceptors(FilesInterceptor('images', 5, { storage }))
+  async createMultiple(
+    @Body() dto: CreateProductDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    const imagePaths = files.map(
+      (file) => `/uploads/products/${file.filename}`,
+    );
+    return this.productsService.create(dto, imagePaths);
+  }
 
-
+  // In controller
   @Get()
   async findAll() {
     try {
       return await this.productsService.findAll();
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    } catch (err: unknown) {
+      throw new BadRequestException(
+        (err as Error | undefined)?.message ?? 'Failed to fetch products',
+      );
     }
   }
-
-
   //  Get product by id
   @Get(':id')
   async findOne(@Param('id') id: string) {
     try {
       return await this.productsService.findOne(id);
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    } catch (err: unknown) {
+      throw new BadRequestException(
+        (err as Error | undefined)?.message ?? 'Failed to fetch products',
+      );
     }
   }
 
@@ -93,8 +106,10 @@ async createMultiple(
     try {
       const imagePaths = file ? [`/uploads/products/${file.filename}`] : [];
       return await this.productsService.update(id, dto, imagePaths);
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    } catch (err: unknown) {
+      throw new BadRequestException(
+        (err as Error | undefined)?.message ?? 'Failed to fetch products',
+      );
     }
   }
 
@@ -110,42 +125,43 @@ async createMultiple(
       const imagePaths =
         files?.map((file) => `/uploads/products/${file.filename}`) || [];
       return await this.productsService.update(id, dto, imagePaths);
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    } catch (err: unknown) {
+      throw new BadRequestException(
+        (err as Error | undefined)?.message ?? 'Failed to fetch products',
+      );
     }
   }
-
 
   //  Delete product
   @Delete(':id')
   async delete(@Param('id') id: string) {
     try {
       return await this.productsService.delete(id);
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    } catch (err: unknown) {
+      throw new BadRequestException(
+        (err as Error | undefined)?.message ?? 'Failed to fetch products',
+      );
     }
   }
 
   @Get('filter/all')
-async filterProducts(
-  @Query('name') name?: string,
-  @Query('startDate') startDate?: string,
-  @Query('endDate') endDate?: string,
-  @Query('stock') stock?: string,  // accept stock number
-) {
-  try {
-    return await this.productsService.filterProducts({
-      name,
-      startDate,
-      endDate,
-      stock,
-    });
-  } catch (error) {
-    throw new BadRequestException(error.message);
+  async filterProducts(
+    @Query('name') name?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('stock') stock?: string, // accept stock number
+  ) {
+    try {
+      return await this.productsService.filterProducts({
+        name,
+        startDate,
+        endDate,
+        stock,
+      });
+    } catch (err: unknown) {
+      throw new BadRequestException(
+        (err as Error | undefined)?.message ?? 'Failed to fetch products',
+      );
+    }
   }
 }
-
-
-}
-
-

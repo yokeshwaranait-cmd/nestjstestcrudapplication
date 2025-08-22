@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
-@Controller('users')   //  this defines the /users route
+@Controller('users') //  this defines the /users route
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -27,6 +35,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {    return this.usersService.delete(id);
+  delete(@Param('id') id: string) {
+    return this.usersService.delete(id);
   }
 }

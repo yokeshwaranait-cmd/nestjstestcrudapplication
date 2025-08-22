@@ -23,7 +23,9 @@ export class MailerController {
   }
 
   @Post('reset')
-  async sendResetMail(@Body() body: { to: string; name: string; resetLink: string }) {
+  async sendResetMail(
+    @Body() body: { to: string; name: string; resetLink: string },
+  ) {
     await this.mailQueue.add('reset', {
       to: body.to,
       subject: 'Reset Your Password',

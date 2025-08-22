@@ -1,66 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectQueue } from '@nestjs/bull';
-import type { Queue } from 'bull';   //  fix
 import * as nodemailer from 'nodemailer';
-import hbs from 'nodemailer-express-handlebars';
-import { join } from 'path';
+import type { Transporter, SendMailOptions, SentMessageInfo } from 'nodemailer';
 
 @Injectable()
 export class MailerService {
-  private transporter;
+  private transporter: Transporter;
 
-  constructor(@InjectQueue('mail') private mailQueue: Queue) {
-    this.transporter = nodemailer.createTransport({
+  constructor() {
+    this.transporter = (
+      nodemailer as unknown as {
+        createTransport: (opts: unknown) => Transporter;
+      }
+    ).createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
-      port: 587, // Gmail TLS
+      port: 587,
       secure: false,
       auth: {
-        user: 'yokeshwaranait@gmail.com',
-        pass: 'giex tyvr mnis baxd',
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
-
-    this.transporter.use(
-      'compile',
-      hbs({
-        viewEngine: {
-          extname: '.hbs',
-          layoutsDir: join(process.cwd(), 'src', 'templates'),
-          defaultLayout: false,
-        },
-        viewPath: join(process.cwd(), 'src', 'templates'),
-        extName: '.hbs',
-      }),
-    );
   }
 
-  async sendMail(
-    to: string,
-    subject: string,
-    template: string,
-    context: string,
-    attachments: string[] = [],
-  ) {
-    return await this.transporter.sendMail({
-      from: 'yokeshwaranait@gmail.com',
-      to,
-      subject,
-      template,
-      context,
-      attachments,
-    });
+  async sendMail(options: SendMailOptions): Promise<SentMessageInfo> {
+    return await this.transporter(options);
   }
-
-
-   async sendWelcomeEmail(data) {
-    return await this.mailQueue.add('welcome', data, {
-      attempts: 3,
-      backoff: 5000,
-      removeOnComplete: true,
-    });
-  }
-  
-
-
 }
