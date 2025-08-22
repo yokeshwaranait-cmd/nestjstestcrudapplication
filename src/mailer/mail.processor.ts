@@ -19,7 +19,13 @@ export class MailProcessor {
   @Process('welcome')
   async handleWelcomeEmail(job: Job<unknown>) {
     const data = job.data as WelcomeEmailPayload | undefined;
-    if (!data || !data.to || !data.subject || !data.template || !data.attachments) {
+    if (
+      !data ||
+      !data.to ||
+      !data.subject ||
+      !data.template ||
+      !data.attachments
+    ) {
       throw new Error('Invalid welcome email payload');
     }
 

@@ -10,19 +10,19 @@ export enum Role {
 
 @Schema({ timestamps: true })
 export class User {
-  _id: Types.ObjectId;
+  _id!: Types.ObjectId;
 
   @Prop({ required: true })
-  name: string;
+  name!: string;
 
   @Prop({ required: true, unique: true, lowercase: true, trim: true })
-  email: string;
+  email!: string;
 
   @Prop({ required: true, select: false })
-  password: string;
+  password!: string;
 
   @Prop({ type: [String], enum: Object.values(Role), default: [Role.USER] })
-  roles: Role[];
+  roles!: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

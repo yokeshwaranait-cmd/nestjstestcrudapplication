@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import nodemailer, {
-  Transporter,
-  SentMessageInfo,
-  SendMailOptions,
-} from 'nodemailer';
+import * as nodemailer from 'nodemailer';
+import type { Transporter, SendMailOptions, SentMessageInfo } from 'nodemailer';
 
 @Injectable()
 export class MailerService {
   private transporter: Transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
+    this.transporter = (
+      nodemailer as unknown as {
+        createTransport: (opts: unknown) => Transporter;
+      }
+    ).createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
       port: 587,
@@ -22,7 +23,7 @@ export class MailerService {
     });
   }
 
-  sendMail(options: SendMailOptions): Promise<SentMessageInfo> {
-    return this.transporter.sendMail(options);
+  async sendMail(options: SendMailOptions): Promise<SentMessageInfo> {
+    return await this.transporter(options);
   }
 }

@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsString()
@@ -15,7 +15,7 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @IsString()
-  price: string;
+  price!: string;
 
   // for single file upload
   image?: (string | File)[];
